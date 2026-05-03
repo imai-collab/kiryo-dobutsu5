@@ -1163,53 +1163,18 @@ export default function App() {
                     </button>
                     <button
                       onClick={async () => {
+                        const jsonStr = JSON.stringify(puzzles, null, 2);
                         try {
-                          const res = await fetch("/api/save-puzzles", {
-                            method: "POST",
-                            headers: { "Content-Type": "application/json" },
-                            body: JSON.stringify({ puzzles }),
-                          });
-                          if (!res.ok) throw new Error("Failed to save to server");
-                          setErrorMsg("保存完了にゃ！");
-                          setTimeout(() => setErrorMsg(null), 3000);
+                          await navigator.clipboard.writeText(jsonStr);
+                          alert("クリップボードに問題データをコピーしました！\n\n【GitHubへ同期する手順】\n1. 左側のファイルツリーから「src/puzzles.json」を開く\n2. 中身をすべて選択して、今コピーしたデータを貼り付ける（上書き）\n3. メニューから「Sync to GitHub」を実行する\n\n※コンテナ内で保存したファイルはGitHub同期の対象にならないため、この手動手順が必要です。");
                         } catch(e) {
-                          setErrorMsg("保存に失敗したにゃ...");
-                          setTimeout(() => setErrorMsg(null), 3000);
-                          console.error(e);
+                          alert("コピーに失敗しました。データ出力ボタンからダウンロードしてください。");
                         }
                       }}
-                      className="text-xs px-3 py-1 font-bold flex items-center gap-1 rounded-lg bg-[#EAE8E3] hover:bg-[#DEDCD7] text-[#634C32] transition-colors"
+                      className="text-xs px-3 py-1 font-bold flex items-center gap-1 rounded-lg bg-[#EAE8E3] border-2 border-[#DEDCD7] hover:bg-[#DEDCD7] text-[#634C32] transition-colors"
                     >
                       <RefreshCcw size={14} />
-                      サーバーへ保存
-                    </button>
-                    <button
-                      onClick={async () => {
-                        try {
-                          const res = await fetch("/api/puzzles");
-                          if (!res.ok) throw new Error("Failed to fetch from server");
-                          const data = await res.json();
-                          if (Array.isArray(data) && data.length > 0) {
-                            setPuzzles(data);
-                            setPuzzleIdx(0);
-                            setPuzzlePage(0);
-                            localStorage.setItem("shogi_puzzles", JSON.stringify(data));
-                            setErrorMsg("最新の問題を同期したにゃ！");
-                            setTimeout(() => setErrorMsg(null), 3000);
-                          } else {
-                            setErrorMsg("問題データが見つからないにゃ...");
-                            setTimeout(() => setErrorMsg(null), 3000);
-                          }
-                        } catch(e) {
-                          setErrorMsg("同期に失敗したにゃ...");
-                          setTimeout(() => setErrorMsg(null), 3000);
-                          console.error(e);
-                        }
-                      }}
-                      className="text-xs px-3 py-1 font-bold flex items-center gap-1 rounded-lg bg-[#EAE8E3] hover:bg-[#DEDCD7] text-[#634C32] transition-colors"
-                    >
-                      <RefreshCcw size={14} />
-                      サーバーから同期
+                      JSONをコピーして保存（GitHub同期用）
                     </button>
                   </div>
                 </div>
